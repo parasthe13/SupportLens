@@ -1,0 +1,22 @@
+services:
+  # Postgres with the pgvector extension pre-installed.
+  # This single container is the only infrastructure SupportLens needs.
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: supportlens-postgres
+    environment:
+      POSTGRES_DB: supportlens
+      POSTGRES_USER: supportlens
+      POSTGRES_PASSWORD: supportlens
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U supportlens"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: supportlens
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/supportlens
+    username: supportlens
+    password: supportlens
+
+  jpa:
+    hibernate:
+      ddl-auto: none # Flyway owns the schema, not Hibernate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+  ai:
+    openai:
+      # Real calls (embeddings/chat) need a real key. A placeholder lets the app
+      # boot in Phase 0 without one; override via the OPENAI_API_KEY env var.
+      api-key: ${OPENAI_API_KEY:sk-placeholder-set-a-real-key}
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.2
+      embedding:
+        options:
+          model: text-embedding-3-small # 1536 dimensions
+    vectorstore:
+      pgvector:
+        initialize-schema: true # auto-creates the vector_store table + extensions
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1536 # must match the embedding model above
+
+# App-specific RAG knobs (bound to com.supportlens.config.RagProperties)
+supportlens:
+  rag:
+    top-k: 4
+    similarity-threshold: 0.5
+    system-prompt: |
+      You are SupportLens, a precise support assistant.
+      Answer the user's question using ONLY the provided context passages.
+      If the context does not contain the answer, say you don't have enough
+      information from the documentation and suggest contacting a human agent.
+      Always cite the source file names you used.
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+server:
+  port: 8080

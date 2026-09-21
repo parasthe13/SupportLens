@@ -1,0 +1,23 @@
+# Build output
+target/
+*.class
+
+# Environment / secrets — never commit real keys
+.env
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+
+# Frontend (Phase 6)
+node_modules/
+dist/
+.angular/
+
+# OS
+.DS_Store
+Thumbs.db
